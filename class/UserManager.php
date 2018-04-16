@@ -5,35 +5,21 @@ declare(strict_types=1);
 class UserManager
 {
 
-  protected $db;
 
-  function __construct($db)
+    /**
+     * @param string $login
+     * @param string $password
+     * @return bool
+     */
+    public function loginSuccess(string $login, string $password)
   {
-    $this->setDb($db);
-  }
+    $pdo = PDOManager::getInstance();
 
-  // SETTER pour la db
-  public function setDb($db)
-  {
-    $this->db = $db;
-  }
-
-
-
-  /**
-   * vérifie le mdp et login de l'utilisateur
-   *
-   */
-  public function loginSuccess(string $login, string $password)
-  {
-    $query = $this->db->prepare('SELECT u_login, u_password FROM users WHERE u_login = :login AND u_password = :password');
-
-    $query->bindValue('login', $login, PDO::PARAM_STR);
-    $query->bindValue('password', $password, PDO::PARAM_STR);
-
-    $query->execute();
-
-    $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    $result = $pdo->makeSelect('
+        SELECT u_login, u_password 
+        FROM users 
+        WHERE u_login = :login AND u_password = :password',
+        ['login' => $login, 'password' => $password]);
 
     if (empty($result)) {
       return false;
@@ -44,17 +30,44 @@ class UserManager
   }
 
 
-  public function addUser($login, $password) : bool
+    /**
+     * @param string $login
+     * @param string $prenom
+     * @param string $nom
+     * @param string $email
+     * @param string $password
+     * @return bool
+     */
+    public function addUser(string $login, string $prenom, string $nom, string $email, string $password) : bool
   {
-    $query = $this->db->prepare('INSERT INTO users(u_login, u_password)
-    VALUES(:login, :password)');
+      $pdo = PDOManager::getInstance();
 
-    $query->bindValue('login', $login, PDO::PARAM_STR);
-    $query->bindValue('password', $password, PDO::PARAM_STR);
 
-    if ($query->execute() !== false) {
-      return true;
-    }
+      $query = $pdo->makeStatement('
+        INSERT INTO users (u_login, u_firstname, u_lastname, u_password, u_email) 
+        VALUES(:u_login, :u_firstname, :u_lastname, :u_password, :u_email)', ['u_login' => $login, 'u_firstname' => $prenom, 'u_lastname' => $nom, 'u_password' => $password, 'u_email' => $email]);
+
+
+      if($query !== false) {
+        return true;
+      }
     return false;
   }
+
+
+    /**
+     * @param string $login
+     * @return array
+     */
+    public function getUserData(string $login) : array
+    {
+      $pdo = PDOManager::getInstance();
+
+      $userData = $pdo->makeSelect('
+          SELECT `u_id` AS `id`, `u_login` AS `login`, `u_firstname` AS `prenom`, `u_lastname` AS `nom`, `u_email` AS `email`, `u_role` AS `role` 
+          FROM `users` WHERE `u_login`= :login', ['login' => $login]);
+
+      return $userData;
+    }
+
 }

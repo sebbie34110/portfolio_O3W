@@ -1,0 +1,76 @@
+.banner {
+    height: 40vh;
+    width: auto;
+    background-image: url("../img/banner_2.jpg");
+    background-size: cover;
+
+}
+
+.wrapper {
+    width: 70%;
+    margin: auto;
+}
+
+
+/*
+            PRESENTATION
+*/
+
+.introduction {
+    height: 30vh;
+    padding-top: 30px;
+}
+
+h2 {
+    text-align: center;
+}
+
+
+/*
+             REALISTAIONS
+ */
+
+.realisations {
+    height: 40vh;
+    padding-top: 30px;
+}
+
+.button {
+    width: auto;
+    padding: 5px 15px;
+    color: white;
+    background-color: #699B85;
+    text-decoration: none;
+}
+
+
+
+
+/*
+                FOOTER
+*/
+
+
+footer {
+    height: 100px;
+    background-color: #C1E2C8;
+    padding: 10px;
+    margin-top: 30px;
+}
+
+footer nav {
+    width: 30%;
+}
+
+footer ul {
+    display: flex;
+    justify-content: flex-start;
+    list-style: none;
+}
+
+footer a {
+    display: block;
+    padding: 5px 15px;
+    color: black;
+    text-decoration: none;
+}

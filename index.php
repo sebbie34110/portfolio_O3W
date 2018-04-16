@@ -5,23 +5,26 @@ require('class/Autoloader.php');
 Autoloader::register();
 $error_msg = '';
 
-// connexion database
-$db = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_LOGIN, DB_PWD);
+// css classe pour le header
+$header_style = '';
+
+$db = PDOManager::getInstance();
 
 if (isset($_POST['login_submit'])) {
   $login = htmlentities($_POST['u_login']);
   $password = htmlentities($_POST['u_password']);
 
   if (empty($login) || empty($password)) {
-    $error_msg = 'Please enter your login and password';
+    $error_msg = 'Veuillez entrer un login et un mot de passe';
   } else {
     $user = new UserManager($db);
     if ($user->loginSuccess($login, $password)==true) {
+        $error_msg = 'Vous êtes connecté';
 
-      session_start();
+        session_start();
+        $userData = $user->getUserData($login);
 
-      $error_msg = 'login successful';
-      $currentUser = new Users($login);
+        $currentUser = new Users($userData);
 
       if(!isset($_SESSION['userLogin'])){
         $_SESSION['userLogin'] = $currentUser->getLogin();
@@ -29,7 +32,7 @@ if (isset($_POST['login_submit'])) {
 
       // setter la session
     } else {
-      $error_msg = 'User doesn\'t exists';
+      $error_msg = 'Cet utilisateur n\existe pas';
     }
   }
 }
@@ -44,42 +47,68 @@ if ($_GET) {
   }
 }
 
+// HEADER
+if (!isset($_SESSION['userLogin'])){
+
+        // Tant que l'utilisateur n'est pas connecté, on affiche le formulaire de connection.
+        // Sinon on affiche la nav
+        require('header/header_logged_out.html');
+       } else {
+          require('header/header_logged_in.html');
+      }
 ?>
-
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <title>LoginPage</title>
-  </head>
-  <body>
-    <header>
-      <?php if (!isset($_SESSION['userLogin'])){ ?>
-        <form class="login" action="" method="post">
-          <input type="text" name="u_login" value="" placeholder="Enter your login here">
-          <input type="text" name="u_password" value="" placeholder="Enter your password here">
-          <input type="submit" name="login_submit" value="Log in">
-        </form>
-        <a href="register.php">Register</a>
-      <?php } else { ?>
-
-        <nav>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Portfolio</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </nav>
-        <a href="index.php?logout=1">Log out</a>
-      <?php } ?>
-    </header>
-    <div class="message">
-     <?php if($error_msg!==''){ ?>
+      <div class="message">
+      <?php if($error_msg!==''){ ?>
       <p class="error_msg"><?= $error_msg ?></p>
-    <?php } ?>
-    </div>
-  </body>
+      <?php } ?>
+      </div>
+
+  <!-- MAIN BODY -->
+      <section class="banner">
+
+      </section>
+
+      <div class="wrapper">
+
+          <section class="introduction">
+              <h2>Présentation</h2>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur assumenda at aut, ipsa laboriosam
+                  magni nemo possimus provident quibusdam quo quos reiciendis repudiandae rerum tenetur, totam unde, voluptatibus.
+                  Optio, recusandae? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur assumenda at aut, ipsa laboriosam
+                  magni nemo possimus provident quibusdam quo quos reiciendis repudiandae rerum tenetur, totam unde, voluptatibus.
+                  Optio, recusandae?</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur assumenda at aut, ipsa laboriosam
+                  magni nemo possimus provident quibusdam quo quos reiciendis repudiandae rerum tenetur, totam unde, voluptatibus.
+                  Optio, recusandae? Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+          </section>
+          <section class="last_projects">
+              <h2>Mes dernières réalisations</h2>
+              <div class="realisations">
+                  <!-- AFFICHER 5 DERNIERES REALISATIONS -->
+              </div>
+              <a class="button" href="realisations.php">Voir plus...</a>
+          </section>
+
+      </div> <!-- END OF WRAPPER -->
+
+  <!-- FOOTER -->
+        <footer>
+            <div>
+                <nav>
+                    <ul>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#contact">Mentions légales</a></li>
+                        <li><a href="#contact">Plan du site</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="legal">
+                <p></p>
+            </div>
+
+
+        </footer>
+    </body>
 </html>
+
+
