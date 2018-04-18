@@ -5,8 +5,9 @@ require('class/Autoloader.php');
 Autoloader::register();
 $error_msg = '';
 
-// css classe pour le header
-$header_style = '';
+if (!isset($_SESSION['userLogin'])) {
+  $_SESSION['userLogin'] = '';
+}
 
 $db = PDOManager::getInstance();
 
@@ -26,37 +27,22 @@ if (isset($_POST['login_submit'])) {
 
         $currentUser = new Users($userData);
 
-      if(!isset($_SESSION['userLogin'])){
         $_SESSION['userLogin'] = $currentUser->getLogin();
-      }
 
       // setter la session
     } else {
-      $error_msg = 'Cet utilisateur n\existe pas';
+      $_SESSION['userLogin'] = null;
+      $error_msg = 'Cet utilisateur n\'existe pas';
     }
   }
 }
 
-// LOGOUT
+include('inc/header.php');
+include('inc/logout.php');
 
-if ($_GET) {
-  if ((int)$_GET['logout']=1) {
-    session_unset();
-    header('Location: index.php');
-    exit();
-  }
-}
-
-// HEADER
-if (!isset($_SESSION['userLogin'])){
-
-        // Tant que l'utilisateur n'est pas connecté, on affiche le formulaire de connection.
-        // Sinon on affiche la nav
-        require('header/header_logged_out.html');
-       } else {
-          require('header/header_logged_in.html');
-      }
 ?>
+
+
       <div class="message">
       <?php if($error_msg!==''){ ?>
       <p class="error_msg"><?= $error_msg ?></p>
@@ -86,29 +72,10 @@ if (!isset($_SESSION['userLogin'])){
               <div class="realisations">
                   <!-- AFFICHER 5 DERNIERES REALISATIONS -->
               </div>
-              <a class="button" href="realisations.php">Voir plus...</a>
+              <a class="button_style" href="realisations.php">Voir plus...</a>
           </section>
 
       </div> <!-- END OF WRAPPER -->
 
   <!-- FOOTER -->
-        <footer>
-            <div>
-                <nav>
-                    <ul>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#contact">Mentions légales</a></li>
-                        <li><a href="#contact">Plan du site</a></li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="legal">
-                <p></p>
-            </div>
-
-
-        </footer>
-    </body>
-</html>
-
-
+<?php include('inc/footer.php');  ?>
